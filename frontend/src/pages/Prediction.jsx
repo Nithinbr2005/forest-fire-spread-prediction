@@ -141,7 +141,10 @@ const Prediction = () => {
           key="sample"
           initial={{ opacity: 0, x: -16 }}
           animate={{ opacity: 1, x: 0 }}
-          className="panel flex min-h-[420px] flex-col items-center justify-center p-8 text-center"
+          className="panel flex min-h-[420px] flex-col items-center justify-center overflow-hidden bg-cover bg-center p-8 text-center"
+          style={{
+            backgroundImage: "linear-gradient(rgba(3, 25, 26, 0.76), rgba(3, 25, 26, 0.82)), url('/prediction-bg.jpg')",
+          }}
         >
           <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-[#42E8E0]/30 bg-[#42E8E0]/10 text-[#42E8E0]">
             <svg className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -194,9 +197,12 @@ const Prediction = () => {
           className="space-y-6"
         >
           <div
-            className={`panel flex min-h-[340px] flex-col items-center justify-center border-2 border-dashed p-8 text-center transition ${
+            className={`panel flex min-h-[340px] flex-col items-center justify-center overflow-hidden border-2 border-dashed bg-cover bg-center p-8 text-center transition ${
               dragActive ? 'border-[#42E8E0] bg-[#42E8E0]/5' : 'border-[#2B3B53] hover:border-[#42E8E0]/60'
             }`}
+            style={{
+              backgroundImage: "linear-gradient(rgba(3, 25, 26, 0.76), rgba(3, 25, 26, 0.82)), url('/prediction-bg.jpg')",
+            }}
             onDragEnter={!loading ? handleDrag : undefined}
             onDragLeave={!loading ? handleDrag : undefined}
             onDragOver={!loading ? handleDrag : undefined}

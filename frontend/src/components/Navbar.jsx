@@ -1,7 +1,14 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 
-const Navbar = ({ onMenuClick, dashboardBackground = false }) => {
+const Navbar = ({
+  onMenuClick,
+  forestBackground = false,
+  theme = 'forest',
+  onThemeChange = () => {},
+  customAccent = '#14b8a6',
+  onCustomAccentChange = () => {},
+}) => {
   const location = useLocation();
 
   const getPageTitle = () => {
@@ -25,7 +32,7 @@ const Navbar = ({ onMenuClick, dashboardBackground = false }) => {
   };
 
   return (
-    <header className={`sticky top-0 z-20 border-b border-white/[0.08] px-4 py-3 backdrop-blur-xl sm:px-6 lg:px-8 ${dashboardBackground ? 'bg-[#03191a]/60' : 'bg-[#03191a]/90'}`}>
+    <header className={`sticky top-0 z-20 border-b border-white/[0.08] px-4 py-3 backdrop-blur-xl sm:px-6 lg:px-8 ${forestBackground ? 'bg-[#03191a]/60' : 'bg-[#03191a]/90'}`}>
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <button
@@ -46,6 +53,37 @@ const Navbar = ({ onMenuClick, dashboardBackground = false }) => {
         </div>
 
         <div className="flex items-center gap-3 sm:gap-4">
+          <label className="flex items-center gap-2 rounded-full border border-[rgba(153,246,228,0.28)] bg-[#072b2d]/90 px-3 py-1.5 text-xs text-[#F8FAFC]">
+            <span className="sr-only">Color theme</span>
+            <svg className="h-4 w-4 shrink-0 text-[#5eead4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+              <path d="M12 3a9 9 0 1 0 0 18h1.2a1.8 1.8 0 0 0 1.3-3.1 1.7 1.7 0 0 1 1.2-2.9H18a3 3 0 0 0 3-3c0-5-4-9-9-9Z" />
+              <circle cx="7.5" cy="11" r="1" fill="currentColor" />
+              <circle cx="10" cy="7.5" r="1" fill="currentColor" />
+              <circle cx="14.5" cy="8" r="1" fill="currentColor" />
+            </svg>
+            <select
+              aria-label="Color theme"
+              value={theme}
+              onChange={(event) => onThemeChange(event.target.value)}
+              className="max-w-[92px] cursor-pointer bg-transparent text-xs text-[#F8FAFC] outline-none"
+            >
+              <option value="forest">Forest</option>
+              <option value="ocean">Ocean</option>
+              <option value="violet">Violet</option>
+              <option value="ember">Ember</option>
+              <option value="black">Black</option>
+              <option value="custom">Custom</option>
+            </select>
+            <input
+              type="color"
+              aria-label="Choose custom accent color"
+              title="Choose custom accent color"
+              value={customAccent}
+              onChange={(event) => onCustomAccentChange(event.target.value)}
+              className="h-5 w-5 cursor-pointer rounded-full border-0 bg-transparent p-0"
+            />
+          </label>
+
           <div className="relative hidden md:block">
             <input
               type="text"

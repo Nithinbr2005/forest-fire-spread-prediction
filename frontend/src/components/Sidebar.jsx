@@ -1,25 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { checkHealth } from '../services/api';
 
-const Sidebar = ({ isOpen = false, onClose = () => {}, dashboardBackground = false }) => {
+const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
   const location = useLocation();
-  const [apiStatus, setApiStatus] = useState('Checking');
-
-  useEffect(() => {
-    let mounted = true;
-    checkHealth()
-      .then((health) => {
-        if (mounted) setApiStatus(health?.status === 'healthy' ? 'Online' : 'Unavailable');
-      })
-      .catch(() => {
-        if (mounted) setApiStatus('Unavailable');
-      });
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   const links = [
     { name: 'Dashboard', path: '/', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
@@ -29,24 +13,20 @@ const Sidebar = ({ isOpen = false, onClose = () => {}, dashboardBackground = fal
   ];
 
   const linkClass = (active) =>
-    `relative flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all ${
-      active
-        ? 'text-[#ECFEFF] bg-[#14b8a6]/14 shadow-[inset_0_0_0_1px_rgba(153,246,228,0.48),0_0_22px_rgba(20,184,166,0.12)]'
-        : 'text-[#d7cceb] hover:bg-white/[0.035] hover:text-[#F8FAFC]'
-    }`;
+    `sidebar-link relative flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all ${active ? 'sidebar-link-active' : ''}`;
 
   const sidebarContent = (
-    <div className={`relative flex h-full flex-col overflow-hidden border-r border-white/[0.08] backdrop-blur-xl ${dashboardBackground ? 'bg-[linear-gradient(180deg,rgba(3,25,26,0.94)_0%,rgba(8,40,43,0.94)_48%,rgba(6,37,40,0.96)_100%)]' : 'bg-[#03191a]/95'}`}>
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-40 [background-image:radial-gradient(ellipse_at_20%_18%,rgba(58,103,74,0.34),transparent_32%),linear-gradient(90deg,transparent_0%,rgba(16,48,37,0.16)_50%,transparent_100%),repeating-linear-gradient(90deg,transparent_0_22px,rgba(73,111,82,0.07)_23px,transparent_25px)]" />
+    <div className="app-sidebar relative flex h-full flex-col overflow-hidden border-r border-white/[0.08] backdrop-blur-xl">
+      <div aria-hidden="true" className="sidebar-decoration pointer-events-none absolute inset-0 opacity-40" />
       <div className="relative flex items-center justify-between border-b border-white/[0.08] px-5 py-5">
         <Link to="/" onClick={onClose} className="flex min-w-0 items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#5eead4]/35 bg-[#14b8a6]/12 text-[#99f6e4] shadow-[0_0_22px_rgba(20,184,166,0.18)]">
+          <div className="sidebar-logo-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border text-[#99f6e4]">
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M13.3 2.3c.6 3.2-.8 4.7-2.1 6.2-1.1 1.2-2.1 2.4-1.8 4.8.6-1.1 1.5-1.9 2.7-2.6-.1 2.3 2.2 3.3 2.2 5.9 0 1.5-1 2.6-2.4 2.6-1.8 0-3-1.4-3-3.4 0-.6.1-1.1.3-1.7C7 15.4 6 17.1 6 19a6 6 0 0 0 12 0c0-3.8-2.2-6.6-3.6-9.1-1-1.8-1.6-3.6-1.1-7.6Z" />
             </svg>
           </div>
           <div className="min-w-0">
-            <h1 className="truncate text-[15px] font-bold text-[#F8FAFC]">Wildfire <span className="text-[#5eead4]">Vision</span></h1>
+            <h1 className="truncate text-[15px] font-bold text-[#F8FAFC]">Wildfire <span className="sidebar-brand-accent">Vision</span></h1>
             <p className="mt-0.5 text-[9px] text-[#9EAFBE]">AI Powered Forest Monitoring</p>
           </div>
         </Link>
@@ -70,7 +50,7 @@ const Sidebar = ({ isOpen = false, onClose = () => {}, dashboardBackground = fal
                 {active && (
                   <motion.div
                     layoutId="sidebar-indicator"
-                    className="absolute inset-0 rounded-lg border border-[#5eead4]/45 bg-gradient-to-r from-[#14b8a6]/12 to-[#2dd4bf]/[0.05]"
+                    className="sidebar-active-indicator absolute inset-0 rounded-lg border"
                     transition={{ type: 'spring', stiffness: 300, damping: 28 }}
                   />
                 )}
@@ -86,29 +66,6 @@ const Sidebar = ({ isOpen = false, onClose = () => {}, dashboardBackground = fal
         })}
       </nav>
 
-      <div className="relative border-t border-white/[0.08] p-4">
-        <div className="rounded-xl border border-white/[0.1] bg-[rgba(11,54,58,0.8)] p-4 shadow-[0_12px_35px_rgba(0,0,0,0.2)] backdrop-blur-lg">
-          <div className="mb-3 flex items-center justify-between text-[9px] font-semibold uppercase tracking-[0.16em] text-[#93A5B7]">
-            <span>System status</span>
-            <span className={`inline-flex items-center gap-1.5 ${apiStatus === 'Online' ? 'text-[#00D6A0]' : 'text-[#B8C5D6]'}`}>
-              <span className={`h-1.5 w-1.5 rounded-full ${apiStatus === 'Online' ? 'bg-[#00D6A0]' : 'bg-[#8291A0]'}`} />
-              API {apiStatus}
-            </span>
-          </div>
-          <div className="space-y-2 text-[11px] text-[#C8D2DE]">
-            {[
-              ['AI Engine', 'Not reported'],
-              ['Model status', 'Not reported'],
-              ['GPU status', 'Not reported'],
-            ].map(([label, value]) => (
-              <div key={label} className="flex items-center justify-between gap-2">
-                <span>{label}</span>
-                <span className="text-[#8393A3]">{value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
     </div>
   );
 
@@ -120,7 +77,7 @@ const Sidebar = ({ isOpen = false, onClose = () => {}, dashboardBackground = fal
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-[#07111F]/80 backdrop-blur-sm md:hidden"
+            className="sidebar-mobile-backdrop fixed inset-0 z-40 backdrop-blur-sm md:hidden"
             onClick={onClose}
           />
         )}

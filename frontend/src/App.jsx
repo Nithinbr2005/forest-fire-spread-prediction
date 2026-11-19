@@ -7,14 +7,36 @@ import Prediction from './pages/Prediction';
 import Results from './pages/Results';
 import About from './pages/About';
 
+const themeNames = ['forest', 'ocean', 'violet', 'ember', 'black', 'custom'];
+
 function AppShell() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = window.localStorage.getItem('wildfire-theme');
+    return themeNames.includes(savedTheme) ? savedTheme : 'forest';
+  });
+  const [customAccent, setCustomAccent] = useState(
+    () => window.localStorage.getItem('wildfire-custom-accent') || '#14b8a6'
+  );
   const [videoUnavailable, setVideoUnavailable] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
   const location = useLocation();
   const isDashboard = location.pathname === '/';
+  const isPrediction = location.pathname === '/prediction';
+  const hasForestBackground = isDashboard || isPrediction;
+
+  const handleThemeChange = (nextTheme) => {
+    setTheme(nextTheme);
+    window.localStorage.setItem('wildfire-theme', nextTheme);
+  };
+
+  const handleCustomAccentChange = (nextAccent) => {
+    setCustomAccent(nextAccent);
+    window.localStorage.setItem('wildfire-custom-accent', nextAccent);
+    handleThemeChange('custom');
+  };
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -28,20 +50,31 @@ function AppShell() {
   }, []);
 
   return (
-    <div className={`relative isolate min-h-screen text-[#F4F7FC] ${isDashboard ? 'bg-transparent' : 'bg-[#03191a]'}`}>
+    <div
+      data-theme={theme}
+      style={{ '--user-accent': customAccent }}
+      className={`relative isolate min-h-screen text-[#F4F7FC] ${hasForestBackground ? 'bg-transparent' : 'bg-[#03191a]'}`}
+    >
       <div className="relative z-10 mx-auto flex min-h-screen max-w-[1800px]">
-          <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} dashboardBackground={isDashboard} />
+          <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
           <div className="flex-1 min-h-screen">
-            <Navbar onMenuClick={() => setSidebarOpen(true)} dashboardBackground={isDashboard} />
+            <Navbar
+              onMenuClick={() => setSidebarOpen(true)}
+              forestBackground={hasForestBackground}
+              theme={theme}
+              onThemeChange={handleThemeChange}
+              customAccent={customAccent}
+              onCustomAccentChange={handleCustomAccentChange}
+            />
             <main className="relative isolate px-4 pb-10 pt-2 sm:px-6 lg:px-8">
-              {isDashboard && (
+              {hasForestBackground && (
                 <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
                   <div
                     className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                    style={{ backgroundImage: "url('/forest-background.jpg')" }}
+                    style={{ backgroundImage: `url('${isDashboard ? '/forest-background.jpg' : '/prediction-bg.jpg'}')` }}
                   />
-                  {!reducedMotion && !videoUnavailable && (
+                  {isDashboard && !reducedMotion && !videoUnavailable && (
                     <video
                       className="absolute inset-0 z-[1] h-full w-full object-cover object-center"
                       src="/videos/4116786355-preview.mp4"
@@ -58,7 +91,7 @@ function AppShell() {
                       onError={() => setVideoUnavailable(true)}
                     />
                   )}
-                  <div className="absolute inset-0 z-[2] bg-[#07111F]/[0.16]" />
+                  <div className={`absolute inset-0 z-[2] ${isDashboard ? 'bg-[#07111F]/[0.16]' : 'bg-gradient-to-b from-[#03191a]/55 via-[#03191a]/40 to-[#03191a]/65'}`} />
                 </div>
               )}
               <div className="relative z-10 mx-auto max-w-[1600px]">
