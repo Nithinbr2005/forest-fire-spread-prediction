@@ -1,1 +1,0 @@
-# Wildfire Vision AI - Backend
